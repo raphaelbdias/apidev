@@ -1,0 +1,112 @@
+body {
+    background-color: black;
+    color: green;
+    font-family: "Courier New", Courier, monospace;
+    padding: 20px;
+}
+
+h1, label, h6 {
+    color: green;
+    font-family: "Courier New", Courier, monospace;
+    margin-bottom: 10px; /* Added margin */
+}
+
+.form-control {
+    color: green;
+    background-color: black;
+    border: 2px solid green;
+    font-family: "Courier New", Courier, monospace;
+    padding: 8px;
+    margin-bottom: 10px; /* Added margin */
+}
+
+.form-control::placeholder {
+    color: green;
+}
+
+.form-check-label {
+    color: green;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.btn-outline-info {
+    color: green;
+    border-color: green;
+    background-color: black;
+    font-family: "Courier New", Courier, monospace;
+    padding: 5px 10px;
+    margin-top: 10px; /* Added margin */
+    margin-bottom: 10px; /* Added margin */
+}
+
+.btn-outline-info:hover {
+    color: black;
+    background-color: green;
+}
+
+.invalid-feedback {
+    color: red;
+    font-family: "Courier New", Courier, monospace;
+    margin-top: 5px; /* Added margin */
+    margin-bottom: 10px; /* Added margin */
+}
+
+a {
+    color: green;
+    font-family: "Courier New", Courier, monospace;
+}
+
+a:hover {
+    color: darkgreen;
+}
+
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="submit"] {
+    color: green;
+    background-color: black;
+    border: 2px solid green;
+    font-family: "Courier New", Courier, monospace;
+    padding: 8px;
+    margin-bottom: 10px; /* Added margin */
+}
+
+input[type="number"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder {
+    color: green;
+}
+
+form {
+    margin-top: 20px;
+    margin-bottom: 20px; /* Added margin */
+}
+
+select {
+    color: black;
+    background-color: green;
+    border: 1px solid green;
+    font-family: "Courier New", Courier, monospace;
+    padding: 8px;
+    margin-bottom: 10px; /* Added margin */
+}
+
+button {
+    color: black;
+    background-color: green;
+    border: 1px solid green;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-family: "Courier New", Courier, monospace;
+}
+
+button:hover {
+    background-color: darkgreen;
+}
+
+.logout-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}

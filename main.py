@@ -18,6 +18,21 @@ def dict_factory(cursor, row):
     fields = [column[0] for column in cursor.description]
     return {key: value for key, value in zip(fields, row)}
 
+def is_email_duplicate(email):
+    conn = sqlite3.connect('login.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM login WHERE email=?", (email,))
+    row = cursor.fetchone()
+    conn.close()
+    return row is not None
+
+def insert_user(email, password):
+    conn = sqlite3.connect('login.db')
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO login (email, password) VALUES (?, ?)", (email, password))
+    conn.commit()
+    conn.close()
+
 con.row_factory = dict_factory
 
 SECRET_KEY = os.urandom(32)
@@ -52,31 +67,54 @@ def load_user(user_id):
    else:
       return User(int(lu[0]), lu[1], lu[2])
 
-@app.route("/login", methods=['GET','POST'])
+@app.route("/", methods=['GET', 'POST'])
 def login():
-  if current_user.is_authenticated:
-     return redirect(url_for('home'))
-  form = LoginForm()
-  if form.validate_on_submit():
-     conn = sqlite3.connect('login.db')
-     curs = conn.cursor()
-     curs.execute("SELECT * FROM login where email = (?)", [form.email.data])
-     user = list(curs.fetchone())
-     Us = load_user(user[0])
-     if form.email.data == Us.email and form.password.data == Us.password:
-        login_user(Us, remember=form.remember.data)
-        Umail = list({form.email.data})[0].split('@')[0]
-        flash('Logged in successfully '+Umail)
-        redirect(url_for('home'))
-     else:
-        flash('Login Unsuccessfull.')
-  return render_template('login.html',title='Login', form=form)
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        conn = sqlite3.connect('login.db')
+        curs = conn.cursor()
+        curs.execute("SELECT * FROM login WHERE email = ?", [form.email.data])
+        user = curs.fetchone()
+        if user is None:
+            flash('Login Unsuccessful. Please check your email and password')
+            return redirect(url_for('login'))
+        
+        Us = load_user(user[0])
+        if form.email.data == Us.email and form.password.data == Us.password:
+            login_user(Us, remember=form.remember.data)
+            Umail = form.email.data.split('@')[0]
+            flash('Logged in successfully ' + Umail)
+            return redirect(url_for('home'))
+        else:
+            flash('Login Unsuccessful. Please check your email and password')
+    
+    return render_template('login.html', title='Login', form=form)
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        # Check if the email already exists in the database
+        if is_email_duplicate(email):
+            return "Email already exists. Please choose another email."
+
+        # If email is unique, insert it into the database
+        insert_user(email, password)
+
+        # Redirect to a success page or login page
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
 
 @app.route('/home')
+@login_required
 def home():
-    
-    return 'Hello'
+    return render_template('home.html', email=current_user.email)
 
 
 @app.route('/get-year/<year>')
@@ -85,6 +123,11 @@ def get_year(year):
     for row in con.execute(f"SELECT * FROM birth_death_china_famine WHERE year={year};"):
         data.append(row)
     return jsonify(data)
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 
 if __name__ == "__main__":
